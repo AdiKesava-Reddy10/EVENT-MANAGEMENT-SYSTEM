@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Error')}"></head>
+<body style="align-items: center; justify-content: center;">
+
+    <div class="card animate-fade-in" style="width: 100%; max-width: 600px; margin: 2rem; text-align: center;">
+        <h1 style="color: var(--danger); font-size: 4rem; margin-bottom: 0;">Oops!</h1>
+        <h2 style="margin-bottom: 2rem;">Something went wrong</h2>
+        
+        <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}">
+            An unexpected error occurred.
+        </div>
+        
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">
+            We're sorry, but we encountered an issue processing your request. 
+            Please try again later or return to the homepage.
+        </p>
+
+        <a th:href="@{/}" class="btn btn-primary">Return to Homepage</a>
+    </div>
+
+</body>
+</html>

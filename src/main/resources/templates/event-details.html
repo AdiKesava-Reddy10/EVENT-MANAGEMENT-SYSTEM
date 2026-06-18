@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout :: head(${event.title} + ' - Event Details')}"></head>
+<body class="bg-gray-50 text-gray-800 font-sans tracking-wide min-h-screen flex flex-col pt-16">
+    <nav th:replace="~{layout :: navbar}"></nav>
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-in">
+        
+        <div th:if="${successMessage}" class="mb-6 p-4 bg-green-50 rounded-xl border border-green-200 flex items-start gap-3 fade-in">
+            <i class="fa-solid fa-circle-check text-green-500 mt-0.5"></i>
+            <div>
+                <h4 class="text-sm font-medium text-green-800">Success</h4>
+                <p class="text-sm text-green-700 mt-1" th:text="${successMessage}"></p>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <a th:href="@{/}" class="text-sm text-gray-500 hover:text-primary transition-colors flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Back to Events
+            </a>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8 fade-in">
+            
+            <!-- Left Side: Event Info -->
+            <div class="lg:w-2/3">
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+                    <div class="h-64 sm:h-80 w-full bg-cover bg-center" th:style="${event.imageUrl != null && !event.imageUrl.isEmpty()} ? 'background-image: url(' + ${event.imageUrl} + ')' : 'background-image: url(https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80)'">
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-indigo-50 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide border border-indigo-100" th:text="${event.type}">Type</span>
+                            <span class="bg-gray-50 text-gray-600 px-3 py-1 rounded-full text-xs font-medium border border-gray-200" th:text="${event.department}">Dept</span>
+                        </div>
+                        
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4" th:text="${event.title}">Event Title</h1>
+                        
+                        <div class="prose prose-indigo max-w-none text-gray-600">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">About The Event</h3>
+                            <p class="whitespace-pre-line leading-relaxed" th:text="${event.description}">Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Details & Registration Card -->
+            <div class="lg:w-1/3">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                    
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 border-b pb-4">Event Information</h3>
+                    
+                    <div class="space-y-5 mb-8">
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 bg-indigo-50 p-2 rounded-lg text-primary">
+                                <i class="fa-regular fa-calendar-days text-xl w-6 text-center"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium font-semibold">Date & Time</p>
+                                <p class="text-gray-900" th:text="${event.date}"></p>
+                                <p class="text-gray-600 text-sm" th:text="${event.time != null ? event.time : 'Time not specified'}"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 bg-indigo-50 p-2 rounded-lg text-primary">
+                                <i class="fa-solid fa-location-dot text-xl w-6 text-center"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium font-semibold">Location</p>
+                                <p class="text-gray-900" th:text="${event.location}"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 bg-indigo-50 p-2 rounded-lg text-primary">
+                                <i class="fa-solid fa-user-tie text-xl w-6 text-center"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium font-semibold">Organizer</p>
+                                <p class="text-gray-900" th:text="${event.organizer != null && !event.organizer.isEmpty() ? event.organizer : event.department + ' Dept'}"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-4" th:if="${event.totalSeats != null}">
+                            <div class="mt-1 bg-indigo-50 p-2 rounded-lg text-primary">
+                                <i class="fa-solid fa-ticket text-xl w-6 text-center"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 font-medium font-semibold">Registration Status</p>
+                                <p class="text-gray-900"><span class="font-bold text-primary">Open</span></p>
+                                <p class="text-gray-600 text-sm"><span th:text="${event.totalSeats}">0</span> Total Seats</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                        <h4 class="font-bold text-gray-900 mb-4 text-center">Register Now</h4>
+                        
+                        <form th:action="@{/event/register}" th:object="${registration}" method="post" class="space-y-4">
+                            <input type="hidden" th:field="*{event.id}" />
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" th:field="*{studentName}" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-primary focus:border-primary text-sm shadow-sm" placeholder="John Doe">
+                                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                <input type="email" th:field="*{studentEmail}" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-primary focus:border-primary text-sm shadow-sm" placeholder="john@student.edu">
+                                <p class="text-red-500 text-xs mt-1" th:if="${#fields.hasErrors('studentEmail')}" th:errors="*{studentEmail}"></p>
+                            </div>
+                            
+                            <button type="submit" class="w-full mt-2 bg-primary text-white py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary hover:bg-indigo-700 transition-colors shadow-md">
+                                Confirm Registration
+                            </button>
+                            <p class="text-xs text-center text-gray-500 mt-2"><i class="fa-solid fa-lock text-gray-400 mr-1"></i> Secure Registration</p>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    <footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>
